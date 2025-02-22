@@ -10,10 +10,8 @@ local character = player.Character or player.CharacterAdded:Wait()
 local humanoid = character:WaitForChild("Humanoid")
 local rootPart = character:WaitForChild("HumanoidRootPart")
 
--- Se "config" estiver dentro do mesmo script como ModuleScript:
-local config = require(script:WaitForChild("config"))
--- OU, se "config" estiver dentro de script.modules:
--- local config = require(script.modules.config)
+-- Importa o config que está dentro da pasta "modules"
+local config = require(script.modules:WaitForChild("config"))
 
 -- Variáveis Globais
 _G.autoFarmActive = false
@@ -38,8 +36,8 @@ end)
 
 -- Proteção de Invencibilidade
 local function protectHumanoid(h)
-    h.HealthChanged:Connect(function(n)
-        if _G.invincibilityActive and n < h.MaxHealth then
+    h.HealthChanged:Connect(function(newHealth)
+        if _G.invincibilityActive and newHealth < h.MaxHealth then
             h.Health = h.MaxHealth
         end
     end)
@@ -75,7 +73,7 @@ pcall(function()
         local m = getnamecallmethod()
         if _G.invincibilityActive and not checkcaller() then
             if m == "FireServer" or m == "InvokeServer" then
-                -- Bloqueia chamadas se necessário
+                -- Se quiser bloquear chamadas de dano, etc., faça aqui
             end
         end
         return oldNamecall(s, ...)
@@ -90,8 +88,8 @@ UserInputService.JumpRequest:Connect(function()
 end)
 
 -- Evento CharacterAdded
-local function onCharacterAdded(nc)
-    character = nc
+local function onCharacterAdded(newChar)
+    character = newChar
     humanoid = character:WaitForChild("Humanoid")
     rootPart = character:WaitForChild("HumanoidRootPart")
     task.wait(0.5)
@@ -102,13 +100,13 @@ local function onCharacterAdded(nc)
 end
 player.CharacterAdded:Connect(onCharacterAdded)
 
--- Importa os módulos
-local autofarm = require(script.modules.autofarm)
-local autopickup = require(script.modules.autopickup)
-local esp = require(script.modules.esp)
-local fly = require(script.modules.fly)
-local noclip = require(script.modules.noclip)
-local ui = require(script.modules.ui)
+-- Importa os outros módulos
+local autofarm   = require(script.modules:WaitForChild("autofarm"))
+local autopickup = require(script.modules:WaitForChild("autopickup"))
+local esp        = require(script.modules:WaitForChild("esp"))
+local fly        = require(script.modules:WaitForChild("fly"))
+local noclip     = require(script.modules:WaitForChild("noclip"))
+local ui         = require(script.modules:WaitForChild("ui"))
 
 -- Loop de Auto Farm
 task.spawn(function()
@@ -150,7 +148,7 @@ task.spawn(function()
 end)
 
 -- Auto Aim Lock e Tracers no RenderStepped
-local tracers = {} -- Tabela para os tracers
+local tracers = {} -- Tabela para armazenar tracers
 RunService.RenderStepped:Connect(function()
     -- Auto Aim Lock para Sheriff
     if _G.autoAimLock then
@@ -160,7 +158,7 @@ RunService.RenderStepped:Connect(function()
             local murderer
             for _, p in ipairs(Players:GetPlayers()) do
                 if p ~= player and p.Character then
-                    if p.Backpack:FindFirstChild("Knife") or (p.Character and p.Character:FindFirstChild("Knife")) then
+                    if p.Backpack:FindFirstChild("Knife") or (p.Character:FindFirstChild("Knife")) then
                         murderer = p
                         break
                     end
@@ -191,7 +189,8 @@ RunService.RenderStepped:Connect(function()
                 tracer.Color = Color3.new(1,1,1)
                 tracer.Thickness = _G.tracerThickness
                 tracer.Transparency = _G.tracerTransparency
-                local center = Vector2.new(cam.ViewportSize.X/2, cam.ViewportSize.Y/2)
+
+                local center = Vector2.new(cam.ViewportSize.X / 2, cam.ViewportSize.Y / 2)
                 tracer.From = center
                 tracer.To = Vector2.new(headPos.X, headPos.Y)
                 tracer.Visible = onScreen
@@ -203,6 +202,7 @@ RunService.RenderStepped:Connect(function()
             end
         end
     else
+        -- Se os tracers estiverem desativados, remove todos
         for _, tracer in pairs(tracers) do
             tracer:Remove()
         end
