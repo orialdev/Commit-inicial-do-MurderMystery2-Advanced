@@ -10,7 +10,7 @@ local character = player.Character or player.CharacterAdded:Wait()
 local humanoid = character:WaitForChild("Humanoid")
 local rootPart = character:WaitForChild("HumanoidRootPart")
 
--- Importa o config que está dentro da pasta "modules"
+-- Carrega o ModuleScript de config
 local config = require(script.modules:WaitForChild("config"))
 
 -- Variáveis Globais
@@ -28,7 +28,7 @@ _G.tracersEnabled = false
 _G.tracerThickness = 2
 _G.tracerTransparency = 0
 
--- Prevenir Idle
+-- Evitar kick por inatividade
 player.Idled:Connect(function()
     VirtualUser:CaptureController()
     VirtualUser:ClickButton2(Vector2.new())
@@ -44,6 +44,7 @@ local function protectHumanoid(h)
 end
 protectHumanoid(humanoid)
 
+-- Hookfunctions para evitar dano
 pcall(function()
     local oldTakeDamage = hookfunction(humanoid.TakeDamage, function(s, dmg)
         if _G.invincibilityActive then return end
@@ -73,7 +74,7 @@ pcall(function()
         local m = getnamecallmethod()
         if _G.invincibilityActive and not checkcaller() then
             if m == "FireServer" or m == "InvokeServer" then
-                -- Se quiser bloquear chamadas de dano, etc., faça aqui
+                -- Bloqueia chamadas de dano, se necessário
             end
         end
         return oldNamecall(s, ...)
@@ -87,7 +88,7 @@ UserInputService.JumpRequest:Connect(function()
     end
 end)
 
--- Evento CharacterAdded
+-- Reaplica proteção se o personagem morrer
 local function onCharacterAdded(newChar)
     character = newChar
     humanoid = character:WaitForChild("Humanoid")
@@ -100,7 +101,7 @@ local function onCharacterAdded(newChar)
 end
 player.CharacterAdded:Connect(onCharacterAdded)
 
--- Importa os outros módulos
+-- Carrega os outros módulos
 local autofarm   = require(script.modules:WaitForChild("autofarm"))
 local autopickup = require(script.modules:WaitForChild("autopickup"))
 local esp        = require(script.modules:WaitForChild("esp"))
@@ -189,8 +190,7 @@ RunService.RenderStepped:Connect(function()
                 tracer.Color = Color3.new(1,1,1)
                 tracer.Thickness = _G.tracerThickness
                 tracer.Transparency = _G.tracerTransparency
-
-                local center = Vector2.new(cam.ViewportSize.X / 2, cam.ViewportSize.Y / 2)
+                local center = Vector2.new(cam.ViewportSize.X/2, cam.ViewportSize.Y/2)
                 tracer.From = center
                 tracer.To = Vector2.new(headPos.X, headPos.Y)
                 tracer.Visible = onScreen
@@ -202,7 +202,6 @@ RunService.RenderStepped:Connect(function()
             end
         end
     else
-        -- Se os tracers estiverem desativados, remove todos
         for _, tracer in pairs(tracers) do
             tracer:Remove()
         end

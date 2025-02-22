@@ -1,0 +1,15 @@
+{
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+        "$className": "ReplicatedStorage"
+    },
+    "StarterPlayer": {
+        "$className": "StarterPlayer",
+        "StarterPlayerScripts": {
+            "$className": "StarterPlayerScripts",
+            "MainScript": {
+                "$path": "src/MainScript.client.lua"
+            }
+        }
+    }
+}
