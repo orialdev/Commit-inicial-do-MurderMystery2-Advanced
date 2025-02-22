@@ -1,4 +1,3 @@
--- config.lua
 local CONFIG = {
     lobbySpawnPos = Vector3.new(-107.8, 138.607, -0.6),
     initialMovementSpeed = 100,

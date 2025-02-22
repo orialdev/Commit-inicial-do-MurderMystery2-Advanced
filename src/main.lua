@@ -1,4 +1,3 @@
--- main.lua
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
 local TweenService = game:GetService("TweenService")
@@ -11,9 +10,12 @@ local character = player.Character or player.CharacterAdded:Wait()
 local humanoid = character:WaitForChild("Humanoid")
 local rootPart = character:WaitForChild("HumanoidRootPart")
 
-local config = require(script.config)
+-- Se "config" estiver dentro do mesmo script como ModuleScript:
+local config = require(script:WaitForChild("config"))
+-- OU, se "config" estiver dentro de script.modules:
+-- local config = require(script.modules.config)
 
--- Global Variáveis
+-- Variáveis Globais
 _G.autoFarmActive = false
 _G.autoCollectGunActive = true
 _G.playerESPActive = false
