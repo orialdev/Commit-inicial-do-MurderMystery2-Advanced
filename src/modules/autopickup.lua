@@ -1,11 +1,9 @@
--- autopickup.lua
 local Workspace = game:GetService("Workspace")
 local Players = game:GetService("Players")
 local module = {}
-
 local function detectarMapaAtual()
     local config = require(script.Parent.Parent.config)
-    for _, mapa in ipairs(config.mapasSalvos) do
+    for _,mapa in ipairs(config.mapasSalvos) do
         local found = Workspace:FindFirstChild(mapa)
         if found then
             return found
@@ -13,7 +11,6 @@ local function detectarMapaAtual()
     end
     return nil
 end
-
 local function getGunDrop()
     local mm = detectarMapaAtual()
     if mm then
@@ -21,7 +18,6 @@ local function getGunDrop()
     end
     return nil
 end
-
 function module.autoEquipGun()
     local player = Players.LocalPlayer
     local character = player.Character
@@ -35,5 +31,4 @@ function module.autoEquipGun()
         rootPart.CFrame = CFrame.new(op)
     end
 end
-
 return module
